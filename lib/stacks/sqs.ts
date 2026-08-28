@@ -1,6 +1,6 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib'
-import { Queue } from 'aws-cdk-lib/aws-sqs'
-import { Construct } from 'constructs'
+import { Duration, Stack, StackProps } from "aws-cdk-lib"
+import { Queue } from "aws-cdk-lib/aws-sqs"
+import { Construct } from "constructs"
 
 export class SQSStack extends Stack {
   public readonly queue: Queue
