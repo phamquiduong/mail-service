@@ -1,10 +1,71 @@
-# Welcome to your CDK TypeScript project
+# Email services
+Send mail by AWS SQS and Lambda
 
-This is a blank project for CDK development with TypeScript.
+```
+Client
+  │
+  ▼
+DynamoDB ── record_id ──▶ SQS
+                           │
+                           ▼
+                        Lambda
+                           │
+                           ├──▶ DynamoDB (get record)
+                           │
+                           └──▶ SES ──▶ Email
+```
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+<br>
 
-## Useful commands
+---
+
+### Project structure
+```
+mail-service/
+├── func/                   # Git submodule - Lambda function
+├── bin/
+├── lib/
+│   ├── stacks/
+│   │   ├── dynamodb.ts
+│   │   ├── lambda.ts
+│   │   └── sqs.ts
+│   └── mail-service.ts
+└── utils/
+```
+
+<br>
+
+---
+
+### Clone sub repo in git
+```
+git submodule update --init --recursive
+```
+
+<br>
+
+---
+
+### Install Node module
+```
+npm i
+```
+
+<br>
+
+---
+
+### Config environment
+- `bin\mail-service.ts`
+    - Update `const ENV_NAME = "dev"` to **your environment name**.
+- Create `.env.<your environment name>`, example `.env.dev`
+    - `EMAIL_SOURCE`: SES email source
+
+<br>
+
+---
+
+### Useful commands
 
 * `npm run build`   type-check the project
 * `npm run watch`   watch for changes and type-check
