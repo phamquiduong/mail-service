@@ -1,35 +1,38 @@
 import { Duration, Stack, StackProps } from "aws-cdk-lib"
 import { Table } from "aws-cdk-lib/aws-dynamodb"
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam"
-import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda"
+import { Code, Function, LayerVersion, Runtime } from "aws-cdk-lib/aws-lambda"
 import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources"
 import { Queue } from "aws-cdk-lib/aws-sqs"
 import { Construct } from "constructs"
 
 interface LambdaStackProps extends StackProps {
-  runTime?: Runtime
-  lambdaCodePath?: string
   emailSource: string
   emailLogTable: Table
   queue: Queue
+  powerToolsLayer: LayerVersion
 }
 
 export class LambdaStack extends Stack {
   public readonly lambdaFn: Function
 
+  private readonly runTime: Runtime = Runtime.PYTHON_3_14
+  private readonly lambdaCodePath: string = "func"
+
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props)
 
     this.lambdaFn = new Function(this, "SendMailLambda", {
-      runtime: props.runTime ?? Runtime.PYTHON_3_14,
+      runtime: this.runTime,
       handler: "main.handler",
-      code: Code.fromAsset(props.lambdaCodePath ?? "func"),
+      code: Code.fromAsset(this.lambdaCodePath),
       timeout: Duration.seconds(30),
       memorySize: 256,
       environment: {
         EMAIL_SOURCE: props.emailSource,
         EMAIL_LOG_TABLE: props.emailLogTable.tableName,
       },
+      layers: [props.powerToolsLayer],
     })
 
     this.lambdaFn.addEventSource(

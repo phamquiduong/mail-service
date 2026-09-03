@@ -3,6 +3,7 @@ import { Construct } from "constructs"
 import { requiredEnv } from "../utils/env"
 import { DynamoDBStack } from "./stacks/dynamodb"
 import { LambdaStack } from "./stacks/lambda"
+import { LayerStack } from "./stacks/layer"
 import { SQSStack as QueueStack } from "./stacks/sqs"
 
 interface MailServiceStackProps extends StackProps {
@@ -22,10 +23,13 @@ export class MailServiceStack extends Stack {
       envName: props.envName,
     })
 
+    const layerStack = new LayerStack(scope, `${props.envName}-MailService-LayerStack`)
+
     const lambdaStack = new LambdaStack(scope, `${props.envName}-MailService-LambdaStack`, {
       emailSource: requiredEnv("EMAIL_SOURCE"),
       emailLogTable: dynamoDBStack.table,
       queue: queueStack.queue,
+      powerToolsLayer: layerStack.powerToolsLayer,
     })
   }
 }
