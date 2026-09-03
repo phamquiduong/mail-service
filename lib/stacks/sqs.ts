@@ -1,12 +1,17 @@
 import { Duration, Stack, StackProps } from "aws-cdk-lib"
 import { Queue } from "aws-cdk-lib/aws-sqs"
 import { Construct } from "constructs"
+import { cdkExport } from "../../utils/cdk-export"
+
+interface SQSStackProps extends StackProps {
+  envName: string
+}
 
 export class SQSStack extends Stack {
   public readonly queue: Queue
   private readonly dlq: Queue
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: SQSStackProps) {
     super(scope, id, props)
 
     this.dlq = new Queue(this, "SendMailDeadLetterQueue", {
@@ -21,5 +26,7 @@ export class SQSStack extends Stack {
         queue: this.dlq,
       },
     })
+
+    cdkExport(this, props.envName, "mail-service:sqs-url", this.queue.queueUrl)
   }
 }

@@ -24,6 +24,6 @@ export class DynamoDBStack extends Stack {
       timeToLiveAttribute: "exp",
     })
 
-    cdkExport(this, props.envName, "table-name", this.table.tableName)
+    cdkExport(this, props.envName, "mail-service:table-name", this.table.tableName)
   }
 }

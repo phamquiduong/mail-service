@@ -18,7 +18,9 @@ export class MailServiceStack extends Stack {
       tableName: `${props.envName}-email-log`,
     })
 
-    const queueStack = new QueueStack(scope, `${props.envName}-MailService-QueueStack`)
+    const queueStack = new QueueStack(scope, `${props.envName}-MailService-QueueStack`, {
+      envName: props.envName,
+    })
 
     const lambdaStack = new LambdaStack(scope, `${props.envName}-MailService-LambdaStack`, {
       emailSource: requiredEnv("EMAIL_SOURCE"),
