@@ -11,6 +11,7 @@ export class DynamoDBStack extends Stack {
 
   constructor(scope: Construct, id: string, props: DynamoDBStackProps) {
     super(scope, id, props)
+
     this.table = new Table(this, "EmailLogTable", {
       tableName: props.tableName,
       partitionKey: {
